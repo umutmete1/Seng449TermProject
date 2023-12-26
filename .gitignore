@@ -1,0 +1,14 @@
+# .NET-specific ignores
+*.obj
+*.bin
+*.suo
+*.user
+*.vs/
+
+# Build directories
+bin/
+obj/
+
+# Dependency directories
+node_modules/
+packages/
