@@ -50,7 +50,7 @@ public class StockService : IStockService
         return stock;
     }
 
-    public async Task<List<Stock>> ReadStockAsync()
+    public async Task<(List<Stock> AddedStocks, int NumberOfAddedStocks)> ReadStockAsync()
     {
         var apiUrl = "https://bigpara.hurriyet.com.tr/api/v1/hisse/list";
         var responseMessage = await _httpClient.GetAsync(apiUrl);
@@ -59,11 +59,34 @@ public class StockService : IStockService
         {
             var jsonContent = await responseMessage.Content.ReadAsStringAsync();
             var apiResponse = JsonConvert.DeserializeObject<StockApiResponse>(jsonContent);
+            var currentStocks = await GetStocksAsync();
+            var updatedStocks = apiResponse.Data;
 
+            var differentStocks = updatedStocks.Except(currentStocks, new StockComparer()).ToList();
 
-            return apiResponse.Data;
+            foreach (var stock in differentStocks)
+            {
+                await AddStockAsync(stock);
+            }
+
+            return (differentStocks, differentStocks.Count);
         }
 
+        
+
         throw new Exception($"API isteği başarısız: {responseMessage.StatusCode}");
+    }
+    
+    public class StockComparer : IEqualityComparer<Stock>
+    {
+        public bool Equals(Stock x, Stock y)
+        {
+            return x.Id == y.Id; 
+        }
+
+        public int GetHashCode(Stock obj)
+        {
+            return obj.Id.GetHashCode();
+        }
     }
 }

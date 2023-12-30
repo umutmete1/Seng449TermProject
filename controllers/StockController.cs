@@ -58,9 +58,20 @@ public class StockController : ControllerBase
     [Route("/ReadAllStocks")]
     public async Task<IActionResult> ReadAllStocks()
     {
-        List<Stock> stocks = await _stockService.ReadStockAsync();
-
-        return Ok(stocks);
+        try
+        {
+            var result = await _stockService.ReadStockAsync();
+            return Ok(new
+            {
+                NumberOfAddedStocks = result.NumberOfAddedStocks,
+                AddedStocks = result.AddedStocks
+                
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
     
 }
