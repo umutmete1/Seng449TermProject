@@ -13,4 +13,6 @@ public class Stock {
     public string? Name { get; set; }
     [JsonProperty("tip")]
     public string? Type { get; set; }
+    
+    // Price'yi tutmaya gerek yok bence, wssden canlı veriyi aktarırız
 }

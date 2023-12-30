@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using TermProject.services.StockService;
 
-public class StockService{
+public class StockService : IStockService{
     private readonly AppDbContext _context;
     public StockService(AppDbContext context)
     {
