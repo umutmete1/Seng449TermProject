@@ -14,6 +14,8 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connecti
 builder.Services.AddIdentityCore<MyUser>()
 .AddEntityFrameworkStores<AppDbContext>()
 .AddApiEndpoints();
+builder.Services.AddControllers();
+builder.Services.AddScoped<StockService>();
 
 var app = builder.Build();
 
@@ -26,5 +28,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapIdentityApi<MyUser>();
+app.MapControllers();
 app.Run();
 
