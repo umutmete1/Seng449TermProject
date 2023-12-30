@@ -1,15 +1,13 @@
-
-
-
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
+using TermProject.services.StockService;
 
-[Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
-public class StockController : ControllerBase{
-    private readonly StockService _stockService;
-    public StockController(StockService stockService)
+public class StockController : ControllerBase
+{
+    private readonly IStockService _stockService;
+
+    public StockController(IStockService stockService)
     {
         _stockService = stockService;
     }
@@ -24,10 +22,7 @@ public class StockController : ControllerBase{
     public async Task<ActionResult<Stock>> GetStockById(int id)
     {
         var stock = await _stockService.GetStockByIdAsync(id);
-        if (stock == null)
-        {
-            return NotFound();
-        }
+        if (stock == null) return NotFound();
 
         return stock;
     }
@@ -42,24 +37,28 @@ public class StockController : ControllerBase{
     [HttpPut("UpdateStock/{id}")]
     public async Task<IActionResult> UpdateStock(int id, Stock stock)
     {
-        if (id != stock.Id)
-        {
-            return BadRequest();
-        }
+        if (id != stock.Id) return BadRequest();
 
         await _stockService.UpdateStockAsync(stock);
         return NoContent();
     }
 
-    [HttpDelete("DeleteStock/{id}")]   
+    [HttpDelete("DeleteStock/{id}")]
     public async Task<ActionResult<Stock>> DeleteStock(int id)
     {
         var stock = await _stockService.DeleteStockAsync(id);
-        if (stock == null)
-        {
-            return NotFound();
-        }
+        if (stock == null) return NotFound();
 
         return stock;
     }
+    
+    [HttpGet]
+    [Route("/ReadAllStocks")]
+    public async Task<IActionResult> ReadAllStocks()
+    {
+        List<Stock> stocks = await _stockService.ReadStockAsync();
+
+        return Ok(stocks);
+    }
+    
 }

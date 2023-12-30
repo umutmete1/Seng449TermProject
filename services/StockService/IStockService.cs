@@ -7,5 +7,5 @@ public interface IStockService
     Task<Stock> AddStockAsync(Stock stock);
     Task<Stock> UpdateStockAsync(Stock stock);
     Task<Stock> DeleteStockAsync(int id);
-
+    Task<List<Stock>> ReadStockAsync();
 }

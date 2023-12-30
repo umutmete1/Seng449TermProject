@@ -1,3 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 
-public class MyUser: IdentityUser{}
+public class MyUser : IdentityUser
+{
+}
