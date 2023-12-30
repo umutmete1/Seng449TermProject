@@ -154,6 +154,10 @@ namespace TermProject.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -164,6 +168,18 @@ namespace TermProject.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
@@ -219,6 +235,9 @@ namespace TermProject.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("MyUserId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
@@ -226,6 +245,8 @@ namespace TermProject.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MyUserId");
 
                     b.ToTable("Stocks");
                 });
@@ -279,6 +300,18 @@ namespace TermProject.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Stock", b =>
+                {
+                    b.HasOne("MyUser", null)
+                        .WithMany("Watchlist")
+                        .HasForeignKey("MyUserId");
+                });
+
+            modelBuilder.Entity("MyUser", b =>
+                {
+                    b.Navigation("Watchlist");
                 });
 #pragma warning restore 612, 618
         }
