@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using TermProject.models;
 
 public class MyUser : IdentityUser
 {
@@ -6,6 +7,6 @@ public class MyUser : IdentityUser
     public string Gender { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public List<Stock>? Watchlist { get; set; }
+    public ICollection<UserWatchlist> Watchlist { get; set; }
     
 }

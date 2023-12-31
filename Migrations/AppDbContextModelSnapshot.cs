@@ -235,9 +235,6 @@ namespace TermProject.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("MyUserId")
-                        .HasColumnType("varchar(255)");
-
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
@@ -246,9 +243,22 @@ namespace TermProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MyUserId");
+                    b.ToTable("Stocks", (string)null);
+                });
 
-                    b.ToTable("Stocks");
+            modelBuilder.Entity("TermProject.models.UserWatchlist", b =>
+                {
+                    b.Property<string>("MyUserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("StockId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MyUserId", "StockId");
+
+                    b.HasIndex("StockId");
+
+                    b.ToTable("UserWatchlist", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -302,11 +312,23 @@ namespace TermProject.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Stock", b =>
+            modelBuilder.Entity("TermProject.models.UserWatchlist", b =>
                 {
-                    b.HasOne("MyUser", null)
+                    b.HasOne("MyUser", "MyUser")
                         .WithMany("Watchlist")
-                        .HasForeignKey("MyUserId");
+                        .HasForeignKey("MyUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MyUser");
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("MyUser", b =>

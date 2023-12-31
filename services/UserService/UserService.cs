@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TermProject.models;
 
 namespace TermProject.services.UserService;
 public class UserService : IUserService
@@ -10,17 +11,37 @@ public class UserService : IUserService
         _appDbContext = appDbContext;
     }
 
-    public async Task<List<Stock>> GetWatchlist(string userId)
+    public async Task<UserWatchlist> GetWatchlist(string userId)
     {
-        var user = await _appDbContext.Users.Include(u => u.Watchlist)
-            .FirstOrDefaultAsync(u => u.Id == userId);
-        //Serialization error
+        var watchlist = await _appDbContext.UserWatchlist.FirstOrDefaultAsync(w => w.MyUserId == userId);
+        
+        return watchlist;
+    }
 
-        if (user != null && user.Watchlist != null)
+    public async Task<Stock> AddStockToWatchlist(string stockCode, string userId)
+    {
+        var stock = await _appDbContext.Stocks.FirstOrDefaultAsync(s => s.Code == stockCode);
+        var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+       if (stock != null && user != null)
+    {
+        UserWatchlist userWatchlist = new UserWatchlist()
         {
-            return user.Watchlist;
-        }
+            Stock = stock,
+            MyUser = user
+        };
 
-        return new List<Stock>();
+        await _appDbContext.UserWatchlist.AddAsync(userWatchlist);
+        await _appDbContext.SaveChangesAsync();
+    }
+
+       return stock;
+
+    }
+    
+    public async Task<bool> IsStockAlreadyAdded(string stockCode, string userId)
+    {
+        return await _appDbContext.UserWatchlist
+            .AnyAsync(uw => uw.Stock.Code == stockCode && uw.MyUser.Id == userId);
     }
 }

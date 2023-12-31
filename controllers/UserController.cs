@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TermProject.models;
 using TermProject.services.UserService;
 
 namespace TermProject.controllers;
@@ -36,6 +37,33 @@ public class UserController : ControllerBase
 
         return Ok(watchlist);
 
+
+    }
+
+    [HttpPost("AddStock")]
+    public async Task<IActionResult> AddStockToWatchlist(string stockCode)
+    {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (userId.Equals(null))
+        {
+            throw new UnauthorizedAccessException("Lütfen giriş yapınız");
+        }
+        
+        bool isStockAlreadyAdded = await _userService.IsStockAlreadyAdded(stockCode, userId);
+        if (isStockAlreadyAdded)
+        {
+            return BadRequest(ErrorResponse.Return(400, $"Hisse senedi kodu '{stockCode}' zaten izleme listesinde bulunmaktadır."));
+        }
+        
+        Stock stock = await _userService.AddStockToWatchlist(stockCode, userId);
+        
+        if (stock == null)
+        {
+            return BadRequest(ErrorResponse.Return(400, $"Hisse senedi kodu '{stockCode}' bulunamadı"));
+        }
+
+        return Ok(stock);
 
     }
 }
