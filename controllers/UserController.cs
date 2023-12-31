@@ -32,7 +32,7 @@ public class UserController : ControllerBase
             return BadRequest("Bir hata oluştu");
         }
 
-        var watchlist = _userService.GetWatchlist(userId);
+        var watchlist = await _userService.GetWatchlist(userId);
 
         return Ok(watchlist);
 
