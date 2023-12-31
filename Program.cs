@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using TermProject.services.StockService;
+using TermProject.services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString =
@@ -43,6 +44,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();

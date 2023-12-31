@@ -6,7 +6,7 @@ namespace TermProject.controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RegisterController : Controller
+public class RegisterController : ControllerBase
 {
     private readonly UserManager<MyUser> _userManager;
 
