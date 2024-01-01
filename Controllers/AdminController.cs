@@ -23,7 +23,7 @@ public class AdminController : ControllerBase{
     public async Task<IActionResult> GetAllUsers(){
         var users = await _userManager.Users
             .ToListAsync();
-        var usersVm = _mapper.Map<List<MyUser>, List<UserVm>>(users.ToList());
+        var usersVm = _mapper.Map<List<MyUser>, List<UserVm>>(users);
         return Ok(usersVm);
     }
 

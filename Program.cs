@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using TermProject.models;
+using TermProject.models.WatchlistModels;
 using TermProject.services.StockService;
 using TermProject.services.UserService;
 
@@ -50,6 +51,7 @@ builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IWatchlistService, WatchlistService>();
 
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(UserMappingProfile)));
+builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(WatchlistMappingProfile)));
 
 
 var app = builder.Build();
