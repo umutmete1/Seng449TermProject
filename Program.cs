@@ -1,7 +1,9 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using TermProject.models;
 using TermProject.services.StockService;
 using TermProject.services.UserService;
 
@@ -46,6 +48,8 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IWatchlistService, WatchlistService>();
+
+builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(UserMappingProfile)));
 
 
 var app = builder.Build();
