@@ -20,5 +20,17 @@ public class AdminController : ControllerBase{
         var users = await _userManager.Users.ToListAsync();
         return Ok(users);
     }
+
+    [HttpPost("AppointAdmin")]
+    public async Task<IActionResult> AppointAdmin([FromBody] string email){
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        await _userManager.AddToRoleAsync(user, "Admin");
+        return Ok();
+    }
     
 }
