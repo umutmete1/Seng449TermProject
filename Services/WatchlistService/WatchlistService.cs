@@ -2,11 +2,11 @@
 using TermProject.models;
 
 namespace TermProject.services.UserService;
-public class UserService : IUserService
+public class WatchlistService : IWatchlistService
 {
     private readonly AppDbContext _appDbContext;
 
-    public UserService(AppDbContext appDbContext)
+    public WatchlistService(AppDbContext appDbContext)
     {
         _appDbContext = appDbContext;
     }
@@ -47,7 +47,22 @@ public class UserService : IUserService
        return stock;
 
     }
-    
+
+    public async Task<bool> RemoveStockFromWatchlist(string stockCode, string userId)
+    {
+        var userWatchlist = await _appDbContext.UserWatchlist
+            .FirstOrDefaultAsync(w => w.Stock.Code == stockCode && w.MyUser.Id == userId);
+
+        if (userWatchlist != null)
+        {
+            _appDbContext.UserWatchlist.Remove(userWatchlist);
+            await _appDbContext.SaveChangesAsync();
+            return true;
+        }
+
+        return false;
+    }
+
     public async Task<bool> IsStockAlreadyAdded(string stockCode, string userId)
     {
         return await _appDbContext.UserWatchlist

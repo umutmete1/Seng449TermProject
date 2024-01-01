@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IStockService, StockService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IWatchlistService, WatchlistService>();
 
 
 var app = builder.Build();
