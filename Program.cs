@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Filters;
 using TermProject.models;
 using TermProject.models.WatchlistModels;
 using TermProject.services.StockService;
-using TermProject.services.UserService;
+using TermProject.services.WatchlistService;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString =

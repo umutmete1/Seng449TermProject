@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TermProject.models;
-using TermProject.services.UserService;
+using TermProject.services.WatchlistService;
 
 namespace TermProject.controllers;
 
@@ -85,5 +85,20 @@ public class WatchlistController : ControllerBase
         // Hisse silinemediyse 404 hata kodu ile geri dön
         return NotFound(ErrorResponse.Return(404, "Hisse bulunamadı"));
 
+    }
+
+    [HttpGet("GetStockCount")]
+    public async Task<IActionResult> GetStockCount()
+    {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            throw new UnauthorizedAccessException("Lütfen giriş yapınız");
+        }
+
+        var count = await _watchlistService.GetStockCount(userId);
+
+        return Ok(count);
     }
 }

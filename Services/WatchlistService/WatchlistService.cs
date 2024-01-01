@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TermProject.models;
 using TermProject.models.WatchlistModels;
 
-namespace TermProject.services.UserService;
+namespace TermProject.services.WatchlistService;
 public class WatchlistService : IWatchlistService
 {
     private readonly AppDbContext _appDbContext;
@@ -67,5 +67,12 @@ public class WatchlistService : IWatchlistService
     {
         return await _appDbContext.UserWatchlist
             .AnyAsync(uw => uw.Stock.Code == stockCode && uw.MyUser.Id == userId);
+    }
+
+    public async Task<int> GetStockCount(string userId)
+    {
+        return await _appDbContext.UserWatchlist
+            .Where(w => w.MyUserId == userId)
+            .CountAsync();
     }
 }
