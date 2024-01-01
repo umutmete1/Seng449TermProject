@@ -11,11 +11,20 @@ public class UserService : IUserService
         _appDbContext = appDbContext;
     }
 
-    public async Task<UserWatchlist> GetWatchlist(string userId)
+    public async Task<List<object>> GetWatchlist(string userId)
     {
-        var watchlist = await _appDbContext.UserWatchlist.FirstOrDefaultAsync(w => w.MyUserId == userId);
-        
-        return watchlist;
+        var watchlist = await _appDbContext.UserWatchlist
+            .Include(w => w.Stock)
+            .Where(w => w.MyUser.Id == userId)
+            .Select(w => new
+            {
+                Code = w.Stock.Code,
+                Name = w.Stock.Name,
+                Type = w.Stock.Type
+            })
+            .ToListAsync();
+
+        return watchlist.Cast<object>().ToList();
     }
 
     public async Task<Stock> AddStockToWatchlist(string stockCode, string userId)
