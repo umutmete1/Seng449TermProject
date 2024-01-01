@@ -1,30 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using TermProject.models;
+using TermProject.models.WatchlistModels;
 
-namespace TermProject.services.UserService;
+namespace TermProject.services.WatchlistService;
 public class WatchlistService : IWatchlistService
 {
     private readonly AppDbContext _appDbContext;
+    private readonly IMapper _mapper;
 
-    public WatchlistService(AppDbContext appDbContext)
+    public WatchlistService(AppDbContext appDbContext, IMapper mapper)
     {
         _appDbContext = appDbContext;
+        _mapper = mapper;
     }
 
-    public async Task<List<object>> GetWatchlist(string userId)
+    public async Task<List<WatchlistVm>> GetWatchlist(string userId)
     {
         var watchlist = await _appDbContext.UserWatchlist
             .Include(w => w.Stock)
             .Where(w => w.MyUser.Id == userId)
-            .Select(w => new
-            {
-                Code = w.Stock.Code,
-                Name = w.Stock.Name,
-                Type = w.Stock.Type
-            })
             .ToListAsync();
 
-        return watchlist.Cast<object>().ToList();
+        var watchlistVm = _mapper.Map<List<UserWatchlist>, List<WatchlistVm>>(watchlist);
+
+        return watchlistVm;
     }
 
     public async Task<Stock> AddStockToWatchlist(string stockCode, string userId)
@@ -67,5 +67,12 @@ public class WatchlistService : IWatchlistService
     {
         return await _appDbContext.UserWatchlist
             .AnyAsync(uw => uw.Stock.Code == stockCode && uw.MyUser.Id == userId);
+    }
+
+    public async Task<int> GetStockCount(string userId)
+    {
+        return await _appDbContext.UserWatchlist
+            .Where(w => w.MyUserId == userId)
+            .CountAsync();
     }
 }
