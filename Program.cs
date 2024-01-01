@@ -29,6 +29,7 @@ builder.Services.AddAuthorizationBuilder();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddIdentityCore<MyUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 
@@ -54,6 +55,27 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope()){
+    var services = scope.ServiceProvider;
+    try{
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = services.GetRequiredService<UserManager<MyUser>>();
+
+        await DbInitializer.InitializeAsync(roleManager);
+
+        var user = await userManager.FindByEmailAsync("abrenji55@gmail.com");
+        if (user != null && !await userManager.IsInRoleAsync(user, "Admin"))
+        {
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+
+    }
+    catch (Exception e){
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(e, "An error occurred while seeding the database.");
+    }
 }
 
 app.UseHttpsRedirection();
