@@ -38,11 +38,11 @@ builder.Services.AddIdentityCore<MyUser>()
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowDynamicOrigin",
-        builder => builder.SetIsOriginAllowed(origin => true)
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
             .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials());
+            .AllowAnyHeader());
 });
 
 builder.Services.AddControllers();
@@ -64,6 +64,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
 app.MapIdentityApi<MyUser>();
 app.MapControllers();
 app.Run();
