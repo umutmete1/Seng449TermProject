@@ -36,10 +36,10 @@ public class UserController : ControllerBase
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
-            await _userManager.AddToRoleAsync(user, "User");
 
             if (result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user, "User");
                 return Ok(new { Message = "Registration successful" });
             }
             else
@@ -54,23 +54,26 @@ public class UserController : ControllerBase
     }
     
     [HttpPost("ChangePassword")]
+    [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswdRm model)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var user = await _userManager.FindByIdAsync(userId);
 
         if (user == null)
         {
-            return NotFound();
+            return BadRequest(ErrorResponse.Return(400, "Bir hata meydana geldi"));
         }
 
         var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
 
         if (!result.Succeeded)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(ErrorResponse.Return(400, result.ToString()));
         }
 
-        return Ok();
+        return Ok(SuccessResponse.Return(200, "Şifre başarı ile değişitirildi"));
     }
 
     [HttpGet("GetInformation")]
