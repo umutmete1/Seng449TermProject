@@ -29,16 +29,16 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("AppointAdmin")]
-    public async Task<IActionResult> AppointAdmin([FromBody] string email)
+    public async Task<IActionResult> AppointAdmin([FromBody] AppointAdminModel emailModel)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByEmailAsync(emailModel.Email);
         if (user == null)
         {
-            return NotFound();
+            return NotFound(ErrorResponse.Return(404,"Failed to appoint admin"));
         }
 
         await _userManager.AddToRoleAsync(user, "Admin");
-        return Ok();
+        return Ok(SuccessResponse.Return(200,"Successfull"));
     }
 
     [HttpPost("ChangePassword")]
@@ -63,9 +63,9 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("DeleteUser")]
-    public async Task<IActionResult> DeleteUser([FromBody] string email)
+    public async Task<IActionResult> DeleteUser([FromBody] AppointAdminModel email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByEmailAsync(email.Email);
 
         if (user == null)
         {
