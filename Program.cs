@@ -6,6 +6,7 @@ using Swashbuckle.AspNetCore.Filters;
 using TermProject.models;
 using TermProject.models.WatchlistModels;
 using TermProject.services.StockService;
+using TermProject.Services.UserService;
 using TermProject.services.WatchlistService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IWatchlistService, WatchlistService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(UserMappingProfile)));
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(WatchlistMappingProfile)));

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TermProject.models;
+using TermProject.Services.UserService;
 
 namespace TermProject.controllers;
 
@@ -9,10 +12,12 @@ namespace TermProject.controllers;
 public class UserController : ControllerBase
 {
     private readonly UserManager<MyUser> _userManager;
+    private readonly IUserService _userService;
 
-    public UserController(UserManager<MyUser> userManager)
+    public UserController(UserManager<MyUser> userManager, IUserService userService)
     {
         _userManager = userManager;
+        _userService = userService;
     }
 
     [HttpPost("register")]
@@ -66,5 +71,22 @@ public class UserController : ControllerBase
         }
 
         return Ok();
+    }
+
+    [HttpGet("GetInformation")]
+    [Authorize]
+    public async Task<IActionResult> GetInformation()
+    {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var user = await _userService.GetInformation(userId);
+
+        if (user == null)
+        {
+            return BadRequest(ErrorResponse.Return(400, "Bir hata meydana geldi"));
+
+        }
+
+        return Ok(user);
     }
 }
