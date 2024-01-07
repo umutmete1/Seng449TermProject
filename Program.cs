@@ -65,6 +65,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
-app.MapIdentityApi<MyUser>();
-app.MapControllers();
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapIdentityApi<MyUser>();
+    endpoints.MapControllers();
+});
 app.Run();
