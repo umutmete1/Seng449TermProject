@@ -23,6 +23,12 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
+        
+        if (!IsEmailValid(model.Email))
+        {
+            return BadRequest(ErrorResponse.Return(400, "Enter a valid e mail"));
+        }
+        
         if (ModelState.IsValid)
         {
             var user = new MyUser
@@ -36,21 +42,32 @@ public class UserController : ControllerBase
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
-
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "User");
-                return Ok(new { Message = "Registration successful" });
+                return Ok(SuccessResponse.Return(200, "Registration is successfull"));
             }
-            else
-            {
-                
-                return BadRequest(new { Errors = result.Errors });
-            }
+
+            var error = result.Errors.First().Description;
+            
+            return BadRequest(ErrorResponse.Return(400, error));
         }
 
        
-        return BadRequest(new { Message = "Invalid registration data" });
+        return BadRequest(new { Message = "Invalid data" });
+    }
+    
+    private bool IsEmailValid(string email)
+    {
+        try
+        {
+            var mailAddress = new System.Net.Mail.MailAddress(email);
+            return mailAddress.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
     }
     
     [HttpPost("ChangePassword")]
