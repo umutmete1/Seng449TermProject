@@ -109,4 +109,24 @@ public class UserController : ControllerBase
 
         return Ok(user);
     }
+    
+    [HttpGet("CheckAdmin")]
+    [Authorize]
+    public async Task<IActionResult> CheckAdmin()
+    {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var user = await _userManager.FindByIdAsync(userId);
+        
+        if (user == null)
+        {
+            return BadRequest(ErrorResponse.Return(400, "Bir hata meydana geldi"));
+
+        }
+        
+        var userRoles = await _userManager.GetRolesAsync(user);
+        
+
+        return Ok(userRoles.FirstOrDefault() == "Admin");
+    }
 }
