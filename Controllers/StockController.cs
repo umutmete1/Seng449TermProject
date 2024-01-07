@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TermProject.models;
 using TermProject.services.StockService;
 
 [Route("api/[controller]")]
@@ -36,20 +37,25 @@ public class StockController : ControllerBase
         return CreatedAtAction(nameof(GetStockById), new { id = stock.Id }, stock);
     }
 
-    [HttpPut("UpdateStock/{id}")]
-    public async Task<IActionResult> UpdateStock(int id, Stock stock)
+    [HttpPut("UpdateStock")]
+    public async Task<IActionResult> UpdateStock(Stock stock)
     {
-        if (id != stock.Id) return BadRequest();
+        var getStock = await _stockService.GetStockByIdAsync(stock.Id);
+
+        if (getStock == null)
+        {
+            return BadRequest(ErrorResponse.Return(404, "Hisse bulunamadı"));
+        }
 
         await _stockService.UpdateStockAsync(stock);
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("DeleteStock/{id}")]
     public async Task<ActionResult<Stock>> DeleteStock(int id)
     {
         var stock = await _stockService.DeleteStockAsync(id);
-        if (stock == null) return NotFound();
+        if (stock == null) return NotFound(ErrorResponse.Return(404,"Hisse bulunamadı"));
 
         return stock;
     }

@@ -6,11 +6,11 @@ namespace TermProject.controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RegisterController : ControllerBase
+public class UserController : ControllerBase
 {
     private readonly UserManager<MyUser> _userManager;
 
-    public RegisterController(UserManager<MyUser> userManager)
+    public UserController(UserManager<MyUser> userManager)
     {
         _userManager = userManager;
     }
@@ -31,11 +31,10 @@ public class RegisterController : ControllerBase
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+            await _userManager.AddToRoleAsync(user, "User");
 
             if (result.Succeeded)
             {
-                //If the User registration successful
-                //Here You can generate and return a JWT token here if needed
                 return Ok(new { Message = "Registration successful" });
             }
             else
@@ -47,5 +46,25 @@ public class RegisterController : ControllerBase
 
        
         return BadRequest(new { Message = "Invalid registration data" });
+    }
+    
+    [HttpPost("ChangePassword")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswdRm model)
+    {
+        var user = await _userManager.FindByEmailAsync(model.Email);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return Ok();
     }
 }
