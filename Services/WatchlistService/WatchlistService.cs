@@ -22,9 +22,19 @@ public class WatchlistService : IWatchlistService
             .Where(w => w.MyUser.Id == userId)
             .ToListAsync();
 
-        var watchlistVm = _mapper.Map<List<UserWatchlist>, List<WatchlistVm>>(watchlist);
+        var watchlistVmList = new List<WatchlistVm>();
+        var random = new Random();
 
-        return watchlistVm;
+        foreach (var watchlistItem in watchlist)
+        {
+            var watchlistVm = _mapper.Map<UserWatchlist, WatchlistVm>(watchlistItem);
+            var randomPrice = (decimal)(random.NextDouble() * (100 - 1) + 1);
+            watchlistVm.Price = Math.Round(randomPrice, 2); 
+
+            watchlistVmList.Add(watchlistVm);
+        }
+
+        return watchlistVmList;
     }
 
     public async Task<Stock> AddStockToWatchlist(string stockCode, string userId)
